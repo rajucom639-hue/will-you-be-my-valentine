@@ -1,103 +1,150 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Will you be my Valentine?</title>
 <style>
-    /* Basic page styling */
-    body {
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #ffdde1, #ee9ca7);
-        height: 100vh;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-    }
-    h1 {
-        font-size: 2.5em;
-        color: #fff;
-        text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
-        margin-bottom: 30px;
-    }
-    .buttons {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    button {
-        background-color: #ff3366;
-        border: none;
-        padding: 15px 30px;
-        font-size: 1.2em;
-        color: white;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    button:hover {
-        background-color: #ff6699;
-        transform: scale(1.1);
-    }
-    /* Floating heart styling */
-    .heart {
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        background-color: red;
-        transform: rotate(-45deg);
-        animation: float 4s linear infinite;
-    }
-    .heart::before,
-    .heart::after {
-        content: "";
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        background-color: red;
-        border-radius: 50%;
-    }
-    .heart::before {
-        top: -10px;
-        left: 0;
-    }
-    .heart::after {
-        left: 10px;
-        top: 0;
-    }
+  body {
+    margin:0;
+    padding:0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#ffdde1,#ee9ca7);
+    height:100vh;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    position:relative;
+  }
 
-    @keyframes float {
-        0% {transform: translateY(0) rotate(-45deg); opacity: 1;}
-        100% {transform: translateY(-600px) rotate(-45deg); opacity: 0;}
-    }
+  h1 {
+    font-size:2.5em;
+    color:#fff;
+    text-shadow:2px 2px 6px rgba(0,0,0,0.3);
+    margin-bottom:40px;
+  }
+
+  .buttons {
+    display:flex;
+    gap:20px;
+    justify-content:center;
+    z-index:1;
+    position:relative;
+  }
+
+  button {
+    background-color:#ff3366;
+    border:none;
+    padding:15px 30px;
+    font-size:1.2em;
+    color:white;
+    border-radius:10px;
+    cursor:pointer;
+    transition:all 0.3s ease;
+    position:relative;
+  }
+
+  button:hover {
+    background-color:#ff6699;
+    transform:scale(1.1);
+  }
+
+  .heart {
+    position:absolute;
+    width:20px;
+    height:20px;
+    background-color:red;
+    transform:rotate(-45deg);
+    animation:float 4s linear infinite;
+    z-index:0;
+  }
+  .heart::before,.heart::after {
+    content:"";
+    position:absolute;
+    width:20px;
+    height:20px;
+    background-color:red;
+    border-radius:50%;
+  }
+  .heart::before{top:-10px; left:0;}
+  .heart::after{left:10px; top:0;}
+  @keyframes float {
+    0%{transform:translateY(0) rotate(-45deg);opacity:1;}
+    100%{transform:translateY(-600px) rotate(-45deg);opacity:0;}
+  }
+
+  /* Cats GIF and love text */
+  .cats {
+    position:absolute;
+    bottom:50px;
+    display:flex;
+    gap:20px;
+    opacity:0;
+    transition:opacity 0.5s ease;
+  }
+  .cats.show { opacity:1; }
+
+  .love-text {
+    position:absolute;
+    top:40%;
+    font-size:2em;
+    color:white;
+    opacity:0;
+    transition:opacity 0.5s ease;
+    text-shadow:2px 2px 6px rgba(0,0,0,0.5);
+  }
+  .love-text.show { opacity:1; }
 </style>
 </head>
 <body>
+
 <h1>Will you be my Valentine?</h1>
+
 <div class="buttons">
-    <button onclick="alert('Yes! ❤️')">Yes ❤️</button>
-    <button onclick="alert('Absolutely Yes 😍')">Absolutely Yes 😍</button>
+  <button onclick="showLove()">Yes ❤️</button>
+  <button id="noBtn">No ❌</button>
 </div>
 
+<div class="cats" id="cats">
+  <img src="https://i.imgur.com/0KfbFZH.png" alt="cat left"/>
+  <img src="https://i.imgur.com/5rUZLqM.png" alt="cat right"/>
+</div>
+<div class="love-text" id="loveText">I love you Pookie ❤️</div>
+
 <script>
-    // Create floating hearts continuously
-    function createHeart() {
-        const heart = document.createElement('div');
-        heart.className = 'heart';
-        heart.style.left = Math.random() * window.innerWidth + 'px';
-        heart.style.animationDuration = 3 + Math.random() * 3 + 's';
-        heart.style.fontSize = (10 + Math.random() * 20) + 'px';
-        document.body.appendChild(heart);
-        setTimeout(() => heart.remove(), 4000);
-    }
-    setInterval(createHeart, 300); // every 0.3 seconds
+  // Floating hearts
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.className='heart';
+    heart.style.left=Math.random()*window.innerWidth+'px';
+    heart.style.animationDuration=3+Math.random()*3+'s';
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),4000);
+  }
+  setInterval(createHeart,300);
+
+  // No button random teleport
+  const noBtn = document.getElementById('noBtn');
+  noBtn.addEventListener('mouseenter', ()=> {
+    const x = Math.random()*(window.innerWidth - noBtn.offsetWidth);
+    const y = Math.random()*(window.innerHeight - noBtn.offsetHeight);
+    noBtn.style.position='absolute';
+    noBtn.style.left=x+'px';
+    noBtn.style.top=y+'px';
+  });
+
+  // Show cats + text on Yes click
+  function showLove() {
+    document.querySelector('.buttons').style.display='none';
+    const text = document.getElementById('loveText');
+    text.classList.add('show');
+    const cats = document.getElementById('cats');
+    cats.classList.add('show');
+  }
 </script>
+
 </body>
 </html>
