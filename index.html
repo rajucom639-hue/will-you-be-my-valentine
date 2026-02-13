@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Will you be my Valentine?</title>
 <style>
+    /* Basic page styling */
     body {
         margin: 0;
         padding: 0;
@@ -44,6 +46,7 @@
         background-color: #ff6699;
         transform: scale(1.1);
     }
+    /* Floating heart styling */
     .heart {
         position: absolute;
         width: 20px;
@@ -84,7 +87,7 @@
 </div>
 
 <script>
-    // Create floating hearts
+    // Create floating hearts continuously
     function createHeart() {
         const heart = document.createElement('div');
         heart.className = 'heart';
@@ -92,12 +95,9 @@
         heart.style.animationDuration = 3 + Math.random() * 3 + 's';
         heart.style.fontSize = (10 + Math.random() * 20) + 'px';
         document.body.appendChild(heart);
-        setTimeout(() => {
-            heart.remove();
-        }, 4000);
+        setTimeout(() => heart.remove(), 4000);
     }
-
-    setInterval(createHeart, 300); // create a heart every 0.3 seconds
+    setInterval(createHeart, 300); // every 0.3 seconds
 </script>
 </body>
 </html>
