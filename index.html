@@ -1,151 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Will you be my Valentine?</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine Interactive Page</title>
 <style>
-  body {
-    margin:0;
-    padding:0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg,#ffdde1,#ee9ca7);
-    height:100vh;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    position:relative;
+  /* --- General styles --- */
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg,#ffe6e6,#ffcce6);
+    transition: background 0.5s ease;
   }
-
-  h1 {
-    font-size:2.5em;
-    color:#fff;
-    text-shadow:2px 2px 6px rgba(0,0,0,0.3);
-    margin-bottom:40px;
-  }
-
-  .buttons {
-    display:flex;
-    gap:20px;
-    justify-content:center;
-    z-index:1;
-    position:relative;
-  }
-
   button {
-    background-color:#ff3366;
-    border:none;
-    padding:15px 30px;
-    font-size:1.2em;
-    color:white;
-    border-radius:10px;
-    cursor:pointer;
-    transition:all 0.3s ease;
-    position:relative;
+    padding: 15px 35px;
+    font-size: 1.2rem;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    margin: 10px;
   }
-
   button:hover {
-    background-color:#ff6699;
-    transform:scale(1.1);
+    transform: scale(1.05);
+  }
+  .container {
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    padding: 30px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0px 8px 20px rgba(0,0,0,0.2);
+    transition: all 0.5s ease;
+  }
+  h1, p {
+    margin-bottom: 20px;
   }
 
-  .heart {
-    position:absolute;
-    width:20px;
-    height:20px;
-    background-color:red;
-    transform:rotate(-45deg);
-    animation:float 4s linear infinite;
-    z-index:0;
-  }
-  .heart::before,.heart::after {
-    content:"";
-    position:absolute;
-    width:20px;
-    height:20px;
-    background-color:red;
-    border-radius:50%;
-  }
-  .heart::before{top:-10px; left:0;}
-  .heart::after{left:10px; top:0;}
-  @keyframes float {
-    0%{transform:translateY(0) rotate(-45deg);opacity:1;}
-    100%{transform:translateY(-600px) rotate(-45deg);opacity:0;}
+  /* --- 404 screen --- */
+  #error-screen { display: block; }
+  #valentine-screen, #yes-message { display: none; }
+
+  /* --- Confetti --- */
+  .confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background-color: #ff3366;
+    opacity: 0.9;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    border-radius: 50%;
+    z-index: 9999;
   }
 
-  .final-container {
-    position:absolute;
-    top:50%;
-    transform:translateY(-50%);
-    display:none;
-    flex-direction:column;
-    align-items:center;
-    gap:20px;
-    z-index:2;
-  }
+  /* --- Buttons container --- */
+  #yesno-buttons { display: flex; justify-content: center; }
 
-  .final-container.show {
-    display:flex;
-    animation:fadeIn 1s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity:0; }
-    to { opacity:1; }
-  }
-
-  .final-text {
-    font-size:2em;
-    color:white;
-    text-shadow:2px 2px 6px rgba(0,0,0,0.5);
-  }
 </style>
 </head>
 <body>
 
-<h1>Will you be my Valentine?</h1>
-
-<div class="buttons">
-  <button onclick="finishLove()">Yes ❤️</button>
-  <button id="noBtn">No ❌</button>
+<div class="container" id="error-screen">
+  <h1>404</h1>
+  <p>Page Not Found</p>
+  <button id="refreshBtn">Refresh</button>
 </div>
 
-<div class="final-container" id="final">
-  <!-- GIF — two cats kissing -->
-  <img src="https://media.giphy.com/media/5xaOcLGvzHxDKjufnLW/giphy.gif" alt="Cats Kissing" style="width:250px; max-width:80%;">
-  <div class="final-text">I love you ❤️</div>
+<div class="container" id="valentine-screen">
+  <h1>Will you be my Valentine?</h1>
+  <div id="yesno-buttons">
+    <button id="yesBtn" style="background-color:#ff3366;color:white;">YES</button>
+    <button id="noBtn" style="background-color:#cccccc;">NO</button>
+  </div>
+</div>
+
+<div class="container" id="yes-message">
+  <p>By clicking YES you agree to:</p>
+  <p>💌 I Love you pookiee🌷😽<br>
+     I am grateful to have a valentine like you💌<br>
+     Always love youu💗<br>
+     Effective immediately! 🚀</p>
 </div>
 
 <script>
-  // Floating hearts background
-  function createHeart() {
-    const heart = document.createElement('div');
-    heart.className='heart';
-    heart.style.left=Math.random()*window.innerWidth+'px';
-    heart.style.animationDuration=3+Math.random()*3+'s';
-    document.body.appendChild(heart);
-    setTimeout(()=>heart.remove(),4000);
-  }
-  setInterval(createHeart,300);
+  // --- Step 1: Transition from 404 to Valentine ---
+  const refreshBtn = document.getElementById('refreshBtn');
+  const errorScreen = document.getElementById('error-screen');
+  const valentineScreen = document.getElementById('valentine-screen');
 
-  // No button teleport animation
+  refreshBtn.addEventListener('click', () => {
+    errorScreen.style.display = 'none';
+    valentineScreen.style.display = 'block';
+  });
+
+  // --- Step 2: YES button logic ---
+  const yesBtn = document.getElementById('yesBtn');
   const noBtn = document.getElementById('noBtn');
-  noBtn.addEventListener('mouseover', () => {
+  const yesMessage = document.getElementById('yes-message');
+  const yesnoButtons = document.getElementById('yesno-buttons');
+
+  yesBtn.addEventListener('click', () => {
+    yesMessage.style.display = 'block';
+    setTimeout(() => {
+      yesnoButtons.style.display = 'none';
+    }, 1000);
+    triggerConfetti(5); // 5 seconds confetti
+  });
+
+  // --- Step 3: NO button logic ---
+  let noClicks = 0;
+  noBtn.addEventListener('mouseenter', () => {
+    noClicks++;
     const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
     const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
     noBtn.style.position = 'absolute';
     noBtn.style.left = x + 'px';
     noBtn.style.top = y + 'px';
+    changeBackground();
+    if(noClicks >= 2){
+      noBtn.textContent = '😭';
+    }
   });
 
-  // Show final animation on Yes
-  function finishLove() {
-    document.querySelector('.buttons').style.display='none';
-    const final = document.getElementById('final');
-    final.classList.add('show');
+  function changeBackground(){
+    const gradients = [
+      'linear-gradient(135deg,#ffe6e6,#ffcce6)',
+      'linear-gradient(135deg,#ffd6b3,#ffb3b3)',
+      'linear-gradient(135deg,#e6ffe6,#b3ffcc)',
+      'linear-gradient(135deg,#e6f0ff,#b3ccff)',
+      'linear-gradient(135deg,#fff0b3,#ffe6cc)'
+    ];
+    const bg = gradients[Math.floor(Math.random() * gradients.length)];
+    document.body.style.background = bg;
+  }
+
+  // --- Step 4: Confetti effect ---
+  function triggerConfetti(duration){
+    const end = Date.now() + duration*1000;
+    const colors = ['#ff3366','#ff6699','#ffcc66','#ff99cc','#66ccff','#ff66cc'];
+    const interval = setInterval(() => {
+      if(Date.now() > end){
+        clearInterval(interval);
+      } else {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+        confetti.style.left = Math.random()*window.innerWidth + 'px';
+        confetti.style.top = '0px';
+        document.body.appendChild(confetti);
+        let falling = setInterval(() => {
+          confetti.style.top = parseFloat(confetti.style.top) + 5 + 'px';
+          if(parseFloat(confetti.style.top) > window.innerHeight){
+            clearInterval(falling);
+            confetti.remove();
+          }
+        }, 20);
+      }
+    }, 50);
   }
 </script>
 
